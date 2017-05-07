@@ -6,6 +6,8 @@
 # Modified by David Gessner
 # Contains some code obtained from
 # https://github.com/danielgm/JarvisGrammars/blob/master/vim.py
+#
+# Modified by Simon Podhajsky
 
 """
 Command-module for the vim editor
@@ -49,6 +51,15 @@ except ImportError:
 
 from dragonfly import *
 
+try:
+    import sys
+    sys.path.append(r'C:\NatLink\NatLink\MacroSystem\caster')
+    from caster.lib import alphanumeric
+    letter = alphanumeric.get_alphabet_choice("letter")
+    print "Caster imported."
+except ImportError:
+    print "Caster not imported."
+    pass
 
 #---------------------------------------------------------------------------
 # Here we globally defined the release action which releases all
@@ -168,16 +179,124 @@ class LetterRule(MappingRule):
         'raip': Key('rparen'),
     }
 
-letter = RuleRef(rule=LetterRule(), name='letter')
-letter_sequence = Repetition(letter, min=1, max=32, name='letter_sequence')
+# letter = RuleRef(rule=LetterRule(), name='letter')
+# letter_sequence = Repetition(letter, min=1, max=32, name='letter_sequence')
 
-def executeLetter(letter):
-    letter.execute()
+# def executeLetter(letter):
+#     letter.execute()
 
-def executeLetterSequence(letter_sequence):
-    for letter in letter_sequence:
-        letter.execute()
+# def executeLetterSequence(letter_sequence):
+#     for letter in letter_sequence:
+#         letter.execute()
 
+
+def verbChoice():
+    """docstring for vimVerbChoice"""
+    return Choice("verb",
+           {
+               "delete": "d",
+               "(copy | yank)": "y",
+               "(select | visual)": "v",
+               "case lower": "g,u",
+               "case upper": "g,U",
+               "format": "g,q",
+               "comment": "g,c",
+               "(indent | reindent)": "equal",
+               "(flow | reflow)": "g,q",
+               "shift left": "langle",
+               "shift right": "rangle",
+           })
+
+def modifierChoice():
+    return Choice("modifier", {
+        '(in | inside | inner)': 'i',
+        '(a | around | outer)': 'a',
+    })
+
+def objectChoice():
+    return Choice("object",{
+        'word': 'w',
+        'big word': 'W',
+        'sentence': 's',
+        '(paragraph | pare)': 'p',
+        'block': 'b',
+        '(paren | laip)': 'rparen',
+        '(brackets | rack)': 'rbracket',
+        '(brace | race)': 'rbrace',
+        'quote': 'dquote',
+        '(post | troth)': 'apostrophe',
+    })
+
+def motionChoice():
+    """docstring for motionChoice"""
+    return Choice("motion", {
+        "up": "k",
+        "down": "j",
+        "left": "h",
+        "right": "l",
+        "word": "w",
+        "big word": "W",
+        "bored": "b",
+        "end word": "e",
+        "big end [word]": "E",
+        "sent up": "lparen",
+        "sent down": "rparen",
+        "pare up": "rparen",
+        "pare down": "lparen",
+        "next": "n",
+        "pecks": "N",
+    }),
+
+def uncountableMotionChoice():
+    return Choice("uncountableMotion", {
+        "start": "0",
+        "front": "caret",
+        "(end | rest)": "dollar",
+        "match": "percent",
+        "top": "g,g",
+        "bottom": "G",
+    })
+
+def findChoice():
+    return Choice("find", {
+        "find": "f",
+        "bind": "F",
+        "(until | till)": "t",
+        "bill": "T",
+    })
+
+def searchChoice():
+    return Choice("search", {
+        "search": "slash",
+        "birch": "question",
+    })
+
+def surroundChoice(name):
+    return Choice(name, {
+        "tag": "t",
+        'ampersand': 'ampersand',
+        '( post | apostrophe )': 'apostrophe',
+        '( star | asterisk )': 'asterisk',
+        'backtick': 'backtick',
+        '( bar | pipe )': 'bar',
+        'dollar': 'dollar',
+        '(double) quote': 'dquote',
+        'hash': 'hash',
+        'percent': 'percent',
+        'single quote': 'squote',
+        '( tilde | strike )': 'tilde',
+        '(underscore | score)': 'underscore',
+
+        'langle': 'langle',
+        'lace': 'lbrace',
+        'lack': 'lbracket',
+        'laip': 'lparen',
+
+        'rangle': 'rangle',
+        '(race | brace | curly)': 'rbrace',
+        '(rack | bracket)': 'rbracket',
+        '(raip | paren)': 'rparen',
+    })
 #---------------------------------------------------------------------------
 # Set up this module's configuration.
 
@@ -220,7 +339,6 @@ if namespace:
 #  functions in this module's config file.
 if format_functions:
     class FormatRule(MappingRule):
-
         mapping  = format_functions
         extras   = [Dictation("dictation")]
 
@@ -243,122 +361,101 @@ else:
 #  For example "up 4" will give the value Key("up:4").
 # More information about Key() actions can be found here:
 #  http://dragonfly.googlecode.com/svn/trunk/dragonfly/documentation/actionkey.html
+
 class NormalModeKeystrokeRule(MappingRule):
-
     exported = False
-
     mapping = {
+        # Motions
+        # "[<n>] <motion>": Key("%(n)s, %(motion)s"),
         "[<n>] up": Key("k:%(n)d"),
         "[<n>] down": Key("j:%(n)d"),
         "[<n>] left": Key("h:%(n)d"),
         "[<n>] right": Key("l:%(n)d"),
-        "[<n>] go up": Key("c-b:%(n)d"),
-        "[<n>] go down": Key("c-f:%(n)d"),
-        "hat": Key("caret"),
-        "dollar": Key("dollar"),
+
+        "go start": Key("caret"),
+        "go end": Key("dollar"),
+
+        "go line <line>": Key("colon") + Text("%(n)d") + Key("enter"),
         "match": Key("percent"),
-        "doc home": Key("c-home"),
-        "doc end": Key("c-end"),
 
-        "lower case": Key("g,u"),
-        "upper case": Key("g,U"),
-        "swap case": Key("tilde"),
-
-        "visual": Key("v"),
-        "visual line": Key("s-v"),
-        "visual block": Key("c-v"),
-
-        "next": Key("n"),
-        "previous": Key("N"),
+        "[<n>] next": Key("n:%(n)d"),
+        "[<n>] pecks": Key("N:%(n)d"),
         "[<n>] back": Key("b:%(n)d"),
         "[<n>] whiskey": Key("w:%(n)d"),
         "[<n>] end": Key("e:%(n)d"),
 
         "Center": Key("z,dot"),
         "format": Key("g,q"),
+        "comment": Key("g,c"),
 
-        "next paragraph": Key("rbrace"),
-        "previous paragraph": Key("lbrace"),
-        "a paragraph": Key("a,p"),
-        "inner paragraph": Key("i,p"),
+        "[<n>] sent down": Key("rparen"),
+        "[<n>] sent up": Key("lparen"),
+
+        "[<n>] pare down": Key("rbrace"),
+        "[<n>] pare up": Key("lbrace"),
+
+        # Search (which is also a motion)
+        '[<n>] find <letter>': Text('%(n)df%(letter)s') + Key('%(letter)s'),
+        '[<n>] bind <letter>': Text('%(n)dF') + Key('%(letter)s'),
+
+        '[<n>] (until | tell) <letter>': Text('%(n)dt') + Key('%(letter)s'),
+        '[<n>] (bill | bell) <letter>': Text('%(n)dT') + Key('%(letter)s'),
+
+        # '[<n>] again': Text('%(n)d;'),
+        # '[<n>] shift again': Text('%(n)d,'),
+        # Count-only verbs
+        "[<n>] case (swap | toggle)": Key("tilde"),
 
         "[<n>] X.": Key("x:%(n)d"),
-        "[<n>] backspace": Key("backspace:%(n)d"),
-
-
         "[<n>] Pete macro": Key("at,at:%(n)d"),
+        "record [macro] <letter>": Key("q") + Key('%(letter)s'),
+        "[<n>] macro <letter>": Key("%(n)s,at") + Key('%(letter)s'),
 
         "[<n>] join": Key("J:%(n)d"),
-
-        "(delete | D.)": Key("d"),
-        "[<n>] (delete | D.) (whiskey|word)": Text("%(n)ddw"),
-        "(delete | D.) a (whiskey | word)": Key("d,a,w"),
-        "(delete | D.) inner (whiskey | word)": Key("d,i,w"),
-        "(delete | D.) a paragraph": Key("d,a,p"),
-        "(delete | D.) inner paragraph": Key("d,i,p"),
-        "(delete | D.) a (paren|parenthesis|raip|laip)": Key("d,a,rparen"),
-        "(delete | D.) inner (paren|parenthesis|raip|laip)": Key("d,i,rparen"),
-        "(delete | D.) a (bracket|rack|lack)": Key("d,a,rbracket"),
-        "(delete | D.) inner (bracket|rack|lack)": Key("d,i,rbracket"),
-        "(delete | D.) a (bracket|race|lace)": Key("d,a,rbrace"),
-        "(delete | D.) inner (bracket|race|lace)": Key("d,i,rbrace"),
 
         "[<n>] (increment|increase)": Key("c-a:%(n)d"),
         "[<n>] (decrement|decrease)": Key("c-x:%(n)d"),
 
-        "shift (delete | D.)": Key("s-d"),
-
         "[<n>] undo": Key("u:%(n)d"),
         "[<n>] redo": Key("c-r:%(n)d"),
 
-        '[<n>] find <letter>': Text('%(n)df') + Function(executeLetter),
-        '[<n>] shift find <letter>': Text('%(n)dF') + Function(executeLetter),
-        'find [<n>] <letter>': Text('%(n)df') + Function(executeLetter),
-        'shift find [<n>] <letter>': Text('%(n)dF') + Function(executeLetter),
+        "[<n>] paste [down]": Key("p"),
+        "[<n>] paste up": Key("P"),
 
-        '[<n>] again': Text('%(n)d;'),
-        '[<n>] shift again': Text('%(n)d,'),
-
-        '[<n>] until <letter>': Text('%(n)dt') + Function(executeLetter),
-        '[<n>] shift until <letter>': Text('%(n)dT') + Function(executeLetter),
-        'until [<n>] <letter>': Text('%(n)dt') + Function(executeLetter),
-        'shift until [<n>] <letter>': Text('%(n)dT') + Function(executeLetter),
-
-        "(yank | copy)": Key("y"),
-        "(yank | copy) a paragraph": Key("y,a,p"),
-        "(yank | copy) inner paragraph": Key("y,i,p"),
-        "(yank | copy) a (paren|parenthesis|raip|laip)": Key("y,a,rparen"),
-        "(yank | copy) inner (paren|parenthesis|raip|laip)": Key("y,i,rparen"),
-        "shift (yank | copy)": Key("Y"),
-        "copy line": Key("y,y"),
-
-        "paste": Key("p"),
-        "shift paste": Key("P"),
-
-        "replace": Key("r"),
-        "shift replace": Key("R"),
-
-        "shift left": Key("langle,langle"),
-        "shift right": Key("rangle,rangle"),
-
-        "fuzzy find": Key("backslash,t"),
-
-	# Python specific macros that work together with certain plug-ins
-	
-	# used in Jedi vim
-	"go to definition": Key("backslash,d"),
+        "[<n>] replace <letter>": Key("r"),
+        # "shift replace <letter_sequence>": Key("R"),
 
         # Pete is shorthand for repeat
         "[<n>] Pete": Key("dot:%(n)d"),
 
+        # Verbs
+        "<verb> (now | visual)": Key("%(verb)s"),
+        "(visual | select) block": Key("c-v"),
+
+        "<verb> <modifier> <object>": Key("%(verb)s, %(modifier)s, %(object)s"),
+        # "<verb> [<n>] <motion>": Key("%(verb)s, %(n)s, %(motion)s"),
+        # In absence of the above, poor man's solution is "<verb> now <motion>"
+
+        # Line operations
+        "<verb> line": Key("%(verb)s:2"),
+        "select line": Key("%(verb)s:2"),
+        "duplicate line": Key("y,y,p"),
+        "shackle": Key("s-v"), # for consistency with caster
+
+        # Rest-of-line operations
+        "<verb> rest": Key("%(verb)s,dollar"),
+
+        # Misc
         "mimic <text>": release + Mimic(extra="text"),
     }
     extras   = [
+        verbChoice(),
+        modifierChoice(),
+        objectChoice(),
         letter,
-        letter_sequence,
         IntegerRef("n", 1, 100),
+        IntegerRef("line", 1, 500),
         Dictation("text"),
-        Dictation("text2"),
     ]
     defaults = {
         "n": 1,
@@ -392,7 +489,7 @@ normal_mode_single_action = Alternative(normal_mode_alternatives)
 #  will be a sequence of the contained elements: a sequence of
 #  actions.
 normal_mode_sequence = Repetition(normal_mode_single_action,
-    min=1, max=16, name="normal_mode_sequence")
+    min=1, max=10, name="normal_mode_sequence")
 
 
 #---------------------------------------------------------------------------
@@ -434,6 +531,35 @@ class NormalModeRepeatRule(CompoundRule):
                 action.execute()
         release.execute()
 
+#---------------------------------------------------------------------------
+
+# NOTE: Unused
+caster_consistency_rule = MappingRule(
+    name = "caster_consistency",
+    mapping = {
+        "stoosh": Key("y"),
+        "cut": Key("d"),
+        "spark": Key("p"),
+        "fly": Key("W"),
+        "shin <direction_small>": Key("v,%(direction_small)s"),
+        "queue <direction_big>": Key("v,%(direction_big)s"),
+        "fly <direction_big>": Key("%(direction_big)s"),
+    },
+    extras = [
+        Choice("direction_small",
+               {"lease": "h",
+                "ross": "l",
+                "sauce": "j",
+                "dunce": "k",
+                }),
+        Choice("direction_big",
+               {"lease": "b",
+                "ross": "w",
+                "sauce": "lbrace",
+                "dunce": "rbrace",
+                })
+    ]
+)
 
 #---------------------------------------------------------------------------
 
@@ -441,14 +567,15 @@ gvim_window_rule = MappingRule(
     name = "gvim_window",
     mapping = {
         # window navigation commands
-        "window left": Key("c-w,h"),
-        "window right": Key("c-w,l"),
-        "window up": Key("c-w,k"),
-        "window down": Key("c-w,j"),
+        "win west": Key("c-w,h"),
+        "win east": Key("c-w,l"),
+        "win north": Key("c-w,k"),
+        "win south": Key("c-w,j"),
+        "win switch": Key("c-w,c-w"),
 
         # window creation commands
-        "window split": Key("c-w,s"),
-        "window vertical split": Key("c-w,v"),
+        "win split": Key("c-w,s"),
+        "win (vault | fault)": Key("c-w,v"),
         },
     extras = [
         ]
@@ -460,10 +587,12 @@ gvim_tabulator_rule = MappingRule(
     name = "gvim_tabulators",
     mapping = {
         # tabulator navigation commands
-        "tabulator next": Key("g,t"),
-        "tabulator previous": Key("g,T"),
+        "[<n>] tab right": Key("g,t"),
+        "[<n>] tab left": Key("g,T"),
+        "tab new": Key("colon") + Text("tabnew") + Key("enter"),
         },
     extras = [
+        IntegerRef("n", 1, 10),
         ]
 )
 
@@ -473,6 +602,7 @@ gvim_general_rule = MappingRule(
     name = "gvim_general",
     mapping = {
         "cancel": Key("escape,u"),
+        "last visual": Key("g,v"),
         },
     extras = [
         ]
@@ -483,36 +613,183 @@ gvim_general_rule = MappingRule(
 gvim_navigation_rule = MappingRule(
     name = "gvim_navigation",
     mapping = {
-        "go first line": Key("g,g"),
-        "go last line": Key("G"),
+        "go top": Key("g,g"),
+        "go bottom": Key("G"),
         "go old": Key("c-o"),
+        "go new": Key("c-i"),
 
         "cursor top": Key("s-h"),
         "cursor middle": Key("s-m"),
         "cursor (low | bottom)": Key("s-l"),
 
         # line navigation
-        "go <line>": Key("colon") + Text("%(line)s\n"),
+        "go line <line>": Key("colon") + Text("%(line)s\n"),
 
         # searching
         "search <text>": Key("slash") + Text("%(text)s\n"),
         "search this": Key("asterisk"),
-        "back search <text>": Key("question") + Text("%(text)s\n"),
-
+        "(birch | Burch | perch) <text>": Key("question") + Text("%(text)s\n"), # search before / search previous
+        "wide search": Key("colon") + Text('Ack! \"\"') + Key("left"),
+        "wide search <text>": Key("colon") + Text('Ack! \"%(text)s\"') + Key("left"),
         },
     extras = [
         Dictation("text"),
         IntegerRef("n", 1, 50),
-        IntegerRef("line", 1, 10000)
+        IntegerRef("line", 1, 100)
         ]
 )
 
+
 #---------------------------------------------------------------------------
+# SP: Extracted from ex mode
+gvim_config_rule = MappingRule(
+    name = "gvim_config",
+    mapping = {
+        # "them" is how DNS recognizes "vim"
+        "them set number": Text("set number "),
+        "them set relative number": Text("set relativenumber "),
+        "them set ignore case": Text("set ignorecase "),
+        "them set no ignore case": Text("set noignorecase "),
+        "them set file format UNIX": Text("set fileformat=unix "),
+        "them set file format DOS": Text("set fileformat=dos "),
+        "them set file type Python": Text("set filetype=python"),
+        "them set file type tex": Text("set filetype=tex"),
+        },
+    extras = [
+        Dictation("text"),
+        Choice("format",
+               {"DOS": "dos",
+                "UNIX": "unix"}),
+        Choice("language",
+               {"Python": "python",
+                "tex": "tex"}),
+        ]
+)
+
+gvim_file_operation_rule = MappingRule(
+    name = "gvim_file_operation",
+    mapping = {
+        # save = w!
+        # quit = q!
+        # done = x!
+        "file save": Key("colon,w,exclamation,enter"),
+        "file save all": Key("colon,w,a,exclamation,enter"),
+        "file quit": Key("colon,q,exclamation,enter"),
+        "file quit all": Key("colon,q,a,exclamation,enter"),
+        "file done": Key("colon,x,exclamation,enter"),
+        "file done all": Key("colon,x,a,exclamation,enter"),
+        "file reload": Key("colon,e,exclamation,enter"),
+        "file open": Key("colon,e") + Text(" <text>"),
+    },
+    extras = [
+        Dictation("text")
+        # Dictation, Choice, ...
+    ]
+)
+
+gvim_quick_replace_rule = MappingRule(
+    name = "gvim_quick_replace",
+    mapping = {
+        "strip line <haystack>": Key("colon") + Text("s/%(haystack)s/c") + Key('enter'),
+        "strip all <haystack>": Key("colon") + Text("%s/%(haystack)s/c") + Key('enter'),
+        "replace line <replace>": Key("colon") + Text("s//%(replace)s/c") + Key('enter'),
+        "replace all <replace>": Key("colon") + Text("s//%(replace)s/c") + Key('enter'),
+        "sub line <haystack> shark <replace>": Key("colon") + Text("s/%(haystack)s/%(replace)s/c") + Key('enter'),
+        "sub all <haystack> shark <replace>": Key("colon") + Text("%s/%(haystack)s/%(replace)s/c") + Key('enter'),
+        },
+    extras = [
+        Dictation("haystack"),
+        Dictation("replace"),
+        ]
+)
+
+gvim_CtrlP_rule = MappingRule(
+    name = "gvim_CtrlP",
+    mapping = {
+        "switch file": Key("colon") + Text("CtrlPMixed") + Key("enter"),
+        "switch fault": Key("c-v"),
+        "switch tab": Key("c-t"),
+        "explore here": Text(":Explore") + Key("enter"),
+        "explore fault": Text(":Vexplore") + Key("enter"),
+        "explore split": Text(":Sexplore") + Key("enter"),
+        "explore tab": Text(":Texplore") + Key("enter"),
+        "explore back": Text(":Rexplore") + Key("enter"),
+        },
+    extras = []
+)
+
+gvim_surround_rule = MappingRule(
+    name = "gvim_surround",
+    mapping = {
+        "put (Sir | surrounding) <surround> [to] <modifier> <object>": Key("y,s,%(modifier)s,%(object)s,%(surround)s"),
+        "change (Sir | surrounding) [from] <surround> [to] <surround_alt>": Key("c,s") + Key("%(surround)s"),
+        "delete (Sir | surrounding) <surround>": Key("d,s") + Key("%(surround)s"),
+        "(sir | surround) now <surround>": Key("s-s, %(surround)s"),
+    },
+    extras = [
+        modifierChoice(),
+        objectChoice(),
+        surroundChoice('surround'),
+        surroundChoice('surround_alt'),
+    ],
+    defaults = {
+        'modifier': 'inner',
+    }
+)
+
+gvim_EasyMotion_rule = MappingRule(
+    name = "gvim_EasyMotion",
+    mapping = {
+        "queasy <letter>": Key("backslash,backslash") + Key('%(letter)s'),
+        "queasy <motion>": Key("backslash,backslash") + Key("%(motion)s"),
+        "queasy <find> <letter>": Key("backslash,backslash") + Key("%(find)s,%(letter)s") + Key("enter"),
+        "queasy <search> <text>": Key("backslash,backslash") + Key("%(search)s,%(text)s") + Key("enter")
+    },
+    extras = [
+        letter,
+        Choice("find",
+               {"find": "f",
+                "bind": "F",
+                "tell": "t",
+                "bell": "T",
+                }),
+        Choice("motion",
+               {"up": "k",
+                "down": "j",
+                "word": "w",
+                "big word": "W",
+                "bored": "b",
+                "pare up": "rparen",
+                "pare down": "lparen",
+                }),
+        Choice("search",
+               {
+                "search": "slash",
+                "(birch | Burch | perch)": "question"
+               }),
+        Dictation("text")
+    ]
+)
+#---------------------------------------------------------------------------
+
+snipmate_rule = MappingRule(
+    name = "snipmate",
+    mapping = {
+        "snip <text>": Text("text") + Key("tab"),
+        "snip alias <alias>": Text("alias") + Key("tab"),
+    },
+    extras = [
+        Dictation("text"),
+        Choice("alias", {
+            # Whatever snippets become useful but hard to say?
+        })
+    ]
+)
 
 
 class ExModeEnabler(CompoundRule):
     # Spoken command to enable the ExMode grammar.
-    spec = "execute"
+    spec = "(exec | execute)"
 
     # Callback when command is spoken.
     def _process_recognition(self, node, extras):
@@ -525,14 +802,12 @@ class ExModeEnabler(CompoundRule):
         print '  \n'.join(ExModeCommands.mapping.keys())
         print "\n(EX MODE)"
 
-
-
 class ExModeDisabler(CompoundRule):
     # spoken command to exit ex mode
     spec = "<command>"
     extras = [Choice("command", {
         "kay": "okay",
-        "cancel": "cancel",
+        "(cancel | oops)": "cancel",
     })]
 
     def _process_recognition(self, node, extras):
@@ -553,23 +828,16 @@ class ExModeCommands(MappingRule):
         "read": Text("r "),
         "(write|save) file": Text("w "),
         "quit": Text("q "),
-        "write and quit": Text("wq "),
+        "(write|save) and quit": Text("wq "),
         "edit": Text("e "),
         "tab edit": Text("tabe "),
-
-        "set number": Text("set number "),
-        "set relative number": Text("set relativenumber "),
-        "set ignore case": Text("set ignorecase "),
-        "set no ignore case": Text("set noignorecase "),
-        "set file format UNIX": Text("set fileformat=unix "),
-        "set file format DOS": Text("set fileformat=dos "),
-        "set file type Python": Text("set filetype=python"),
-        "set file type tex": Text("set filetype=tex"),
+        "tab new": Text("tabnew "),
 
         "P. W. D.": Text("pwd "),
 
         "help": Text("help"),
-        "substitute": Text("s/"),
+        "sub line": Text("s/"),
+        "sub file": Text("%s/"),
         "up": Key("up"),
         "down": Key("down"),
         "[<n>] left": Key("left:%(n)d"),
@@ -585,53 +853,38 @@ class ExModeCommands(MappingRule):
 
 
 #---------------------------------------------------------------------------
+class InsertModeEnabler(MappingRule):
+    exported = True
+    mapping = {
+        "change <modifier> <object>": Key("c, %(modifier)s, %(object)s"),
+        "change line": Key("c,c"),
+        "change rest": Key("C"),
 
-class InsertModeEnabler(CompoundRule):
-    spec = "<command>"
-    extras = [Choice("command", {
-        "insert": "i",
-        "shift insert": "I",
-
-        "change": "c",
-        "change whiskey": "c,w",
-        "change (echo|end)": "c,e",
-        "change a paragraph": "c,a,p",
-        "change inner paragraph": "c,i,p",
-        "change a (paren|parenthesis|raip|laip)": "c,a,rparen",
-        "change inner (paren|parenthesis|raip|laip)": "c,i,rparen",
-        "shift change": "C",
-
-        "sub line" : "S",
-
-        "(after | append)": "a",
-        "shift (after | append)": "A",
-
-        "oh": "o",
-        "shift oh": "O",
-
-	# Jedi vim rename command
-	"rename": "backslash,r",
-    })]
+        "insert": Key("i"),
+        "prepend": Key("I"),
+        "after": Key("a"),
+        "append": Key("A"),
+        "oh": Key("o"),
+        "bo": Key("O"),
+    }
+    extras = [
+        modifierChoice(),
+        objectChoice(),
+              ]
 
     def _process_recognition(self, node, extras):
         InsertModeBootstrap.disable()
         normalModeGrammar.disable()
         InsertModeGrammar.enable()
-        for string in extras["command"].split(','):
-            key = Key(string)
-            key.execute()
-        print "Available commands:"
-        print '  \n'.join(InsertModeCommands.mapping.keys())
+        super(InsertModeEnabler, self)._process_recognition(node, extras)
         print "\n(INSERT)"
-
-
 
 class InsertModeDisabler(CompoundRule):
     # spoken command to exit InsertMode
     spec = "<command>"
     extras = [Choice("command", {
         "kay": "okay",
-        "cancel": "cancel",
+        "( cancel | oops )": "cancel",
     })]
 
     def _process_recognition(self, node, extras):
@@ -646,7 +899,6 @@ class InsertModeDisabler(CompoundRule):
             print "Insert command accepted"
         print "\n(NORMAL)"
 
-
 # handles InsertMode control structures
 class InsertModeCommands(MappingRule):
     mapping  = {
@@ -654,7 +906,7 @@ class InsertModeCommands(MappingRule):
         "[<n>] (scratch|delete)": Key("c-w:%(n)d"),
         "[<n>] slap": Key("enter:%(n)d"),
         "[<n>] tab": Key("tab:%(n)d"),
-        "[<n>] backspace": Key("backspace:%(n)d"),
+        "[<n>] clear": Key("backspace:%(n)d"),
         "(scratch|delete) line": Key("c-u"),
         "[<n>] left": Key("left:%(n)d"),
         "[<n>] right": Key("right:%(n)d"),
@@ -683,7 +935,6 @@ class InsertModeCommands(MappingRule):
         "n": 1,
     }
 
-
 #---------------------------------------------------------------------------
 
 gvim_exec_context = AppContext(executable="gvim")
@@ -702,8 +953,6 @@ ExModeGrammar.add_rule(ExModeDisabler())
 ExModeGrammar.load()
 ExModeGrammar.disable()
 
-
-
 # set up the grammar for vim's insert mode
 InsertModeBootstrap = Grammar("InsertMode bootstrap", context=gvim_context)
 InsertModeBootstrap.add_rule(InsertModeEnabler())
@@ -714,8 +963,6 @@ InsertModeGrammar.add_rule(InsertModeDisabler())
 InsertModeGrammar.load()
 InsertModeGrammar.disable()
 
-
-
 # set up the grammar for vim's normal mode and start normal mode
 normalModeGrammar = Grammar("gvim", context=gvim_context)
 normalModeGrammar.add_rule(NormalModeRepeatRule())
@@ -723,9 +970,15 @@ normalModeGrammar.add_rule(gvim_window_rule)
 normalModeGrammar.add_rule(gvim_tabulator_rule)
 normalModeGrammar.add_rule(gvim_general_rule)
 normalModeGrammar.add_rule(gvim_navigation_rule)
+normalModeGrammar.add_rule(gvim_config_rule)
+normalModeGrammar.add_rule(gvim_quick_replace_rule)
+normalModeGrammar.add_rule(gvim_CtrlP_rule)
+normalModeGrammar.add_rule(gvim_EasyMotion_rule)
+normalModeGrammar.add_rule(gvim_file_operation_rule)
+normalModeGrammar.add_rule(gvim_surround_rule)
+normalModeGrammar.add_rule(snipmate_rule)
+# normalModeGrammar.add_rule(caster_consistency_rule)
 normalModeGrammar.load()
-
-
 
 # Unload function which will be called at unload time.
 def unload():
