@@ -426,7 +426,7 @@ class NormalModeKeystrokeRule(MappingRule):
         "[<n>] Pete": Key("dot:%(n)d"),
 
         # Verbs
-        "<verb> (now | visual)": Key("%(verb)s"),
+        "<verb> (now | visual | that)": Key("%(verb)s"),
         "(visual | select) block": Key("c-v"),
 
         "<verb> <modifier> <object>": Key("%(verb)s, %(modifier)s, %(object)s"),
@@ -434,10 +434,10 @@ class NormalModeKeystrokeRule(MappingRule):
         # In absence of the above, poor man's solution is "<verb> now <motion>"
 
         # Line operations
+        "select line": Key("V"),
         "<verb> line": Key("%(verb)s:2"),
-        "select line": Key("%(verb)s:2"),
         "duplicate line": Key("y,y,p"),
-        "shackle": Key("s-v"), # for consistency with caster
+        "shackle": Key("V"), # for consistency with caster
 
         # Rest-of-line operations
         "<verb> rest": Key("%(verb)s,dollar"),
@@ -623,9 +623,9 @@ gvim_navigation_rule = MappingRule(
         "go line <line>": Key("colon") + Text("%(line)s\n"),
 
         # searching
-        "search <text>": Key("slash") + Text("%(text)s\n"),
+        "search <text>": Key("slash") + Text("%(text)s\c\n"),
         "search this": Key("asterisk"),
-        "(birch | Burch | perch) <text>": Key("question") + Text("%(text)s\n"), # search before / search previous
+        "(birch | Burch | perch) <text>": Key("question") + Text("%(text)s\c\n"), # search before / search previous
         "wide search": Key("colon") + Text('Ack! \"\"') + Key("left"),
         "wide search <text>": Key("colon") + Text('Ack! \"%(text)s\"') + Key("left"),
         },
@@ -718,10 +718,10 @@ gvim_CtrlP_rule = MappingRule(
 gvim_surround_rule = MappingRule(
     name = "gvim_surround",
     mapping = {
-        "put (Sir | surrounding) <surround> [to] <modifier> <object>": Key("y,s,%(modifier)s,%(object)s,%(surround)s"),
-        "change (Sir | surrounding) [from] <surround> [to] <surround_alt>": Key("c,s") + Key("%(surround)s"),
-        "delete (Sir | surrounding) <surround>": Key("d,s") + Key("%(surround)s"),
-        "(sir | surround) now <surround>": Key("s-s, %(surround)s"),
+        "(sir | wrap) <modifier> <object> [in] <surround>": Key("y,s,%(modifier)s,%(object)s,%(surround)s"),
+        "(change Sir | strange) [from] <surround> [to] <surround_alt>": Key("c,s") + Key("%(surround)s"),
+        "(delete Sir | sleet) <surround>": Key("d,s") + Key("%(surround)s"),
+        "(sir | wrap) now [in] <surround>": Key("S, %(surround)s"),
     },
     extras = [
         modifierChoice(),
