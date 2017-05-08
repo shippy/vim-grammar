@@ -873,7 +873,9 @@ class InsertModeEnabler(MappingRule):
         InsertModeBootstrap.disable()
         normalModeGrammar.disable()
         InsertModeGrammar.enable()
-        super(InsertModeEnabler, self)._process_recognition(node, extras)
+        # Note: there are issues with the super call. If you run into them,
+        # do not fret and google for super TypeError order.
+        super(self.__class__, self)._process_recognition(node, extras)
         print "\n(INSERT)"
 
 class InsertModeDisabler(CompoundRule):
