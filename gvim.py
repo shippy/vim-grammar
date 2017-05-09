@@ -225,7 +225,6 @@ def objectChoice():
     })
 
 def motionChoice():
-    """docstring for motionChoice"""
     return Choice("motion", {
         "up": "k",
         "down": "j",
@@ -233,16 +232,16 @@ def motionChoice():
         "right": "l",
         "word": "w",
         "big word": "W",
-        "bored": "b",
-        "end word": "e",
+        "board": "b",
+        "word end": "e",
         "big end [word]": "E",
         "sent up": "lparen",
         "sent down": "rparen",
-        "pare up": "rparen",
-        "pare down": "lparen",
+        "pare up": "lbrace",
+        "pare down": "rbrace",
         "next": "n",
         "pecks": "N",
-    }),
+    })
 
 def uncountableMotionChoice():
     return Choice("uncountableMotion", {
@@ -363,33 +362,14 @@ class NormalModeKeystrokeRule(MappingRule):
     exported = False
     mapping = {
         # Motions
-        # "[<n>] <motion>": Key("%(n)s, %(motion)s"),
-        "[<n>] up": Key("k:%(n)d"),
-        "[<n>] down": Key("j:%(n)d"),
-        "[<n>] left": Key("h:%(n)d"),
-        "[<n>] right": Key("l:%(n)d"),
+        "[<n>] <motion>": Key("%(n)s, %(motion)s"),
 
         "go start": Key("caret"),
         "go end": Key("dollar"),
-
         "go line <line>": Key("colon") + Text("%(n)d") + Key("enter"),
         "match": Key("percent"),
 
-        "[<n>] next": Key("n:%(n)d"),
-        "[<n>] pecks": Key("N:%(n)d"),
-        "[<n>] back": Key("b:%(n)d"),
-        "[<n>] whiskey": Key("w:%(n)d"),
-        "[<n>] end": Key("e:%(n)d"),
-
         "Center": Key("z,dot"),
-        "format": Key("g,q"),
-        "comment": Key("g,c"),
-
-        "[<n>] sent down": Key("rparen"),
-        "[<n>] sent up": Key("lparen"),
-
-        "[<n>] pare down": Key("rbrace"),
-        "[<n>] pare up": Key("lbrace"),
 
         # Search (which is also a motion)
         '[<n>] find <letter>': Text('%(n)df%(letter)s') + Key('%(letter)s'),
@@ -400,6 +380,7 @@ class NormalModeKeystrokeRule(MappingRule):
 
         # '[<n>] again': Text('%(n)d;'),
         # '[<n>] shift again': Text('%(n)d,'),
+
         # Count-only verbs
         "[<n>] case (swap | toggle)": Key("tilde"),
 
@@ -426,12 +407,11 @@ class NormalModeKeystrokeRule(MappingRule):
         "[<n>] Pete": Key("dot:%(n)d"),
 
         # Verbs
-        "<verb> (now | visual | that)": Key("%(verb)s"),
+        "<verb> (that | now)": Key("%(verb)s"),
         "(visual | select) block": Key("c-v"),
 
         "<verb> <modifier> <object>": Key("%(verb)s, %(modifier)s, %(object)s"),
-        # "<verb> [<n>] <motion>": Key("%(verb)s, %(n)s, %(motion)s"),
-        # In absence of the above, poor man's solution is "<verb> now <motion>"
+        "<verb> [<n>] <motion>": Key("%(verb)s, %(n)s, %(motion)s"),
 
         # Line operations
         "select line": Key("V"),
@@ -449,6 +429,7 @@ class NormalModeKeystrokeRule(MappingRule):
         verbChoice(),
         modifierChoice(),
         objectChoice(),
+        motionChoice(),
         letter,
         IntegerRef("n", 1, 100),
         IntegerRef("line", 1, 500),
