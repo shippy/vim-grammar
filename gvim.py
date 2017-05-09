@@ -760,6 +760,12 @@ snipmate_rule = MappingRule(
         Dictation("text"),
         Choice("alias", {
             # Whatever snippets become useful but hard to say?
+            "fixture": Key("f,i,x,tab"),
+            "method": Key("d,e,f,s,tab"),
+            "function": Key("d,e,f,tab"),
+            "class": Key("c,l,tab"),
+            "while loop": Key("w,h,tab"),
+            "for loop": Key("f,o,r,tab"),
         })
     ]
 )
@@ -804,16 +810,13 @@ class ExModeDisabler(CompoundRule):
 class ExModeCommands(MappingRule):
     mapping  = {
         "read": Text("r "),
-        "(write|save) file": Text("w "),
-        "quit": Text("q "),
-        "(write|save) and quit": Text("wq "),
         "edit": Text("e "),
         "tab edit": Text("tabe "),
         "tab new": Text("tabnew "),
 
         "P. W. D.": Text("pwd "),
 
-        "help": Text("help"),
+        "help": Text("help "),
         "sub line": Text("s/"),
         "sub file": Text("%s/"),
         "up": Key("up"),
@@ -884,28 +887,17 @@ class InsertModeCommands(MappingRule):
     mapping  = {
         "<text>": Text("%(text)s"),
         "[<n>] (scratch|delete)": Key("c-w:%(n)d"),
-        "[<n>] slap": Key("enter:%(n)d"),
-        "[<n>] tab": Key("tab:%(n)d"),
-        "[<n>] clear": Key("backspace:%(n)d"),
         "(scratch|delete) line": Key("c-u"),
         "[<n>] left": Key("left:%(n)d"),
         "[<n>] right": Key("right:%(n)d"),
 
-	"assign": Key("space,equal,space"),
-	"plus": Key("space,plus,space"),
-	"minus": Key("space,minus,space"),
-	"times": Key("space,asterisk,space"),
-	"equals": Key("space,equal,equal,space"),
-	"not equals": Key("space,exclamation,equal,space"),
-	"triple quote": Key("dquote,dquote,dquote"),
-
-	# snippets for snipmate
-	"new fixture": Key("f,i,x,tab"),
-	"new method": Key("d,e,f,s,tab"),
-	"new class": Key("c,l,tab"),
-	"new function": Key("d,e,f,tab"),
-	"new while loop": Key("w,h,tab"),
-	"new for loop": Key("f,o,r,tab"),
+	# "assign": Key("space,equal,space"),
+	# "plus": Key("space,plus,space"),
+	# "minus": Key("space,minus,space"),
+	# "times": Key("space,asterisk,space"),
+	# "equals": Key("space,equal,equal,space"),
+	# "not equals": Key("space,exclamation,equal,space"),
+	# "triple quote": Key("dquote,dquote,dquote"),
     }
     extras = [
         Dictation("text"),
