@@ -298,9 +298,11 @@ def surroundChoice(name):
 
 # This defines a configuration object with the name "gvim".
 config            = Config("gvim")
-config.cmd        = Section("Language section")
+config.cmd        = Section("Language")
+config.system     = Section("System")
 
-
+config.system.windowSwitchPrefix = Item('c-', # default: "c-w,",
+                                        doc = "What prefix to use when switching windows? Relevant with vim-tmux-navigator (which can make vim windows and tmux panes inter-navigable.).")
 # This searches for a file with the same name as this file (gvim.py), but with
 # the extension ".py" replaced by ".txt". In other words, it loads the
 # configuration specified in the file gvim.txt
@@ -545,15 +547,17 @@ gvim_window_rule = MappingRule(
     name = "gvim_window",
     mapping = {
         # window navigation commands
-        "win west": Key("c-w,h"),
-        "win east": Key("c-w,l"),
-        "win north": Key("c-w,k"),
-        "win south": Key("c-w,j"),
+        "win west": Key(config.system.windowSwitchPrefix + "h"),
+        "win east": Key(config.system.windowSwitchPrefix + "l"),
+        "win north": Key(config.system.windowSwitchPrefix + "k"),
+        "win south": Key(config.system.windowSwitchPrefix + "j"),
         "win switch": Key("c-w,c-w"),
 
         # window creation commands
         "win split": Key("c-w,s"),
         "win (vault | fault)": Key("c-w,v"),
+
+        "win equal": Key("c-w,equal"),
         },
     extras = [
         ]
