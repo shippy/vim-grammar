@@ -471,8 +471,9 @@ normal_mode_single_action = Alternative(normal_mode_alternatives)
 normal_mode_sequence = Repetition(normal_mode_single_action,
     min=1, max=10, name="normal_mode_sequence")
 
-
 #---------------------------------------------------------------------------
+# EVERYTHING BELOW THIS LINE IS NOT CCR
+#
 # Here we define the top-level rule which the user can say.
 
 # This is the rule that actually handles recognitions.
@@ -565,18 +566,8 @@ gvim_window_rule = MappingRule(
 
 #---------------------------------------------------------------------------
 
-gvim_tabulator_rule = MappingRule(
-    name = "gvim_tabulators",
-    mapping = {
-        # tabulator navigation commands
-        "[<n>] tab right": Key("g,t"),
-        "[<n>] tab left": Key("g,T"),
-        "tab new": Key("colon") + Text("tabnew") + Key("enter"),
-        },
-    extras = [
-        IntegerRef("n", 1, 10),
-        ]
-)
+from vim.navigation.tabs import vimTabulatorRule
+gvim_tabulator_rule = vimTabulatorRule()
 
 #---------------------------------------------------------------------------
 
