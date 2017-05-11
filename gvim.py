@@ -851,6 +851,8 @@ class InsertModeEnabler(MappingRule):
         "append": Key("A"),
         "oh": Key("o"),
         "bo": Key("O"),
+
+        "insert last": Key("g, i"),
     }
     extras = [
         modifierChoice(),
@@ -889,11 +891,30 @@ class InsertModeDisabler(CompoundRule):
 # handles InsertMode control structures
 class InsertModeCommands(MappingRule):
     mapping  = {
-        "<text>": Text("%(text)s"),
-        "[<n>] (scratch|delete)": Key("c-w:%(n)d"),
-        "(scratch|delete) line": Key("c-u"),
+        # Insertion
+        "<text>": Key('c-g, u') + Text("%(text)s"), # create undo point
+        # "complete": Key("tab"), # "tabby" should do the trick
+        "shark paste <letter>": Key("c-r, %(letter)s"),
+        "shark paste literal <letter>": Key("c-r:2, %(letter)s"),
+        "shark paste sys": Key("c-r, asterisk"),
+        "shark paste file": Key("c-r, percent"),
+        "shark paste search": Key("c-r, slash"),
+        "shark shift left": Key("c-t"),
+        "shark shift right": Key("c-d"),
+
+        # Deletion
+        "scratch that": Key("escape, u, a"), # undo last utterance & re-enter insert mode
+        "[<n>] scratch": Key("c-w:%(n)d"),
+        "scratch line": Key("c-u"),
+        "scratch one": Key("c-h"),
+
+        # Motion
+        "[<n>] up": Key("up:%(n)d"),
+        "[<n>] down": Key("down:%(n)d"),
         "[<n>] left": Key("left:%(n)d"),
         "[<n>] right": Key("right:%(n)d"),
+        "go end": Key("c-e"),
+        "go start": Key("escape, I"), # avoiding c-a because of tmux conflict
 
 	# "assign": Key("space,equal,space"),
 	# "plus": Key("space,plus,space"),
@@ -904,6 +925,7 @@ class InsertModeCommands(MappingRule):
 	# "triple quote": Key("dquote,dquote,dquote"),
     }
     extras = [
+        letter,
         Dictation("text"),
         IntegerRef("n", 1, 50),
     ]
