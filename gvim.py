@@ -402,7 +402,7 @@ class NormalModeKeystrokeRule(MappingRule):
         "[<n>] paste [down]": Key("p"),
         "[<n>] paste up": Key("P"),
 
-        "[<n>] replace <letter>": Key("r"),
+        "[<n>] replace <letter>": Key("r, %(letter)s"),
         # "shift replace <letter_sequence>": Key("R"),
 
         # Pete is shorthand for repeat
