@@ -374,7 +374,7 @@ class NormalModeKeystrokeRule(MappingRule):
         "Center": Key("z,dot"),
 
         # Search (which is also a motion)
-        '[<n>] find <letter>': Text('%(n)df%(letter)s') + Key('%(letter)s'),
+        '[<n>] find <letter>': Text('%(n)df') + Key('%(letter)s'),
         '[<n>] bind <letter>': Text('%(n)dF') + Key('%(letter)s'),
 
         '[<n>] (until | tell) <letter>': Text('%(n)dt') + Key('%(letter)s'),
@@ -745,26 +745,10 @@ gvim_EasyMotion_rule = MappingRule(
 )
 #---------------------------------------------------------------------------
 
-snipmate_rule = MappingRule(
-    name = "snipmate",
-    mapping = {
-        "snip <text>": Text("text") + Key("tab"),
-        "snip alias <alias>": Text("alias") + Key("tab"),
-    },
-    extras = [
-        Dictation("text"),
-        Choice("alias", {
-            # Whatever snippets become useful but hard to say?
-            "fixture": Key("f,i,x,tab"),
-            "method": Key("d,e,f,s,tab"),
-            "function": Key("d,e,f,tab"),
-            "class": Key("c,l,tab"),
-            "while loop": Key("w,h,tab"),
-            "for loop": Key("f,o,r,tab"),
-        })
-    ]
-)
+from vim.plugins.snipmate import SnipMateRule
+snipmate_rule = SnipMateRule()
 
+#---------------------------------------------------------------------------
 
 class ExModeEnabler(CompoundRule):
     # Spoken command to enable the ExMode grammar.
@@ -949,6 +933,7 @@ InsertModeBootstrap.load()
 InsertModeGrammar = Grammar("InsertMode grammar", context=gvim_context)
 InsertModeGrammar.add_rule(InsertModeCommands())
 InsertModeGrammar.add_rule(InsertModeDisabler())
+InsertModeGrammar.add_rule(snipmate_rule)
 InsertModeGrammar.load()
 InsertModeGrammar.disable()
 
@@ -965,7 +950,6 @@ normalModeGrammar.add_rule(gvim_CtrlP_rule)
 normalModeGrammar.add_rule(gvim_EasyMotion_rule)
 normalModeGrammar.add_rule(gvim_file_operation_rule)
 normalModeGrammar.add_rule(gvim_surround_rule)
-normalModeGrammar.add_rule(snipmate_rule)
 # normalModeGrammar.add_rule(caster_consistency_rule)
 normalModeGrammar.load()
 
