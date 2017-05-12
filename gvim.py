@@ -71,111 +71,8 @@ print 'gVim grammar accessed.'
 
 release = Key("shift:up, ctrl:up")
 
-letter = Choice("letter", {
-    'arch': 'a',
-    'brov': 'b',
-    'char': 'c',
-    'delta': 'd',
-    'echo': 'e',
-    'foxy': 'f',
-    'goof': 'g',
-    'hotel': 'h',
-    'india': 'i',
-    'julia': 'j',
-    'kilo': 'k',
-    'lima': 'l',
-    'mike': 'm',
-    'novakeen': 'n',
-    'oscar': 'o',
-    'prime': 'p',
-    'quebec': 'q',
-    'romeo': 'r',
-    'sierra': 's',
-    'tango': 't',
-    'uniform': 'u',
-    'victor': 'v',
-    'whiskey': 'w',
-    'x-ray': 'x',
-    'yankee': 'y',
-    'zulu': 'z',
-
-    'upper arch': 'A',
-    'upper brov': 'B',
-    'upper char': 'C',
-    'upper delta': 'D',
-    'upper echo': 'E',
-    'upper foxy': 'F',
-    'upper goof': 'G',
-    'upper hotel': 'H',
-    'upper india': 'I',
-    'upper julia': 'J',
-    'upper kilo': 'K',
-    'upper lima': 'L',
-    'upper mike': 'M',
-    'upper novakeen': 'N',
-    'upper oscar': 'O',
-    'upper prime': 'P',
-    'upper quebec': 'Q',
-    'upper romeo': 'R',
-    'upper sierra': 'S',
-    'upper tango': 'T',
-    'upper uniform': 'U',
-    'upper victor': 'V',
-    'upper whiskey': 'W',
-    'upper x-ray': 'X',
-    'upper yankee': 'Y',
-    'upper zulu': 'Z',
-
-    'zero': '0',
-    'one': '1',
-    'two': '2',
-    'three': '3',
-    'four': '4',
-    'five': '5',
-    'six': '6',
-    'seven': '7',
-    'eight': '8',
-    'nine': '9',
-
-    'ace': 'space',
-    'tabby': 'tab',
-
-    'ampersand': 'ampersand',
-    '(apostrophe | post)': 'apostrophe',
-    'single quote': 'squote',
-    '(asterisk | starling)': 'asterisk',
-    'at': 'at',
-    'backslash': 'backslash',
-    'backtick': 'backtick',
-    'pipe': 'bar',
-    'caret': 'caret',
-    'deckle': 'colon',
-    'boom': 'comma',
-    'dollar': 'dollar',
-    '(dot|period)': 'dot',
-    'quote': 'dquote',
-    'equal': 'equal',
-    'clamor': 'exclamation',
-    'hashtag': 'hash',
-    'hyphen': 'hyphen',
-    'minus': 'minus',
-    'modulo': 'percent',
-    'plus': 'plus',
-    'questo': 'question',
-    'semper': 'semicolon',
-    'slash': 'slash',
-    'tilde': 'tilde',
-    '(underscore | score)': 'underscore',
-
-    'langle': 'langle',
-    'lace': 'lbrace',
-    'lack': 'lbracket',
-    'laip': 'lparen',
-    'rangle': 'rangle',
-    'race': 'rbrace',
-    'rack': 'rbracket',
-    'raip': 'rparen',
-})
+from vim.choices.letter import letterChoice
+letter = letterChoice()
 # letter = RuleRef(rule=LetterRule(), name='letter')
 # letter_sequence = Repetition(letter, min=1, max=32, name='letter_sequence')
 
@@ -186,113 +83,15 @@ letter = Choice("letter", {
 #     for letter in letter_sequence:
 #         letter.execute()
 
+from vim.choices.verb import verbChoice
+from vim.choices.modifier import modifierChoice
+from vim.choices.object import objectChoice
+from vim.choices.motion import motionChoice
+from vim.choices.uncountableMotion import uncountableMotionChoice
+from vim.choices.find import findChoice
+from vim.choices.search import searchChoice
+from vim.choices.surround import surroundChoice
 
-def verbChoice():
-    """docstring for vimVerbChoice"""
-    return Choice("verb",
-           {
-               "delete": "d",
-               "(copy | yank)": "y",
-               "(select | visual)": "v",
-               "case lower": "g,u",
-               "case upper": "g,U",
-               "format": "g,q",
-               "comment": "g,c",
-               "(indent | reindent)": "equal",
-               "(flow | reflow)": "g,q",
-               "shift left": "langle",
-               "shift right": "rangle",
-           })
-
-def modifierChoice():
-    return Choice("modifier", {
-        '(in | inside | inner)': 'i',
-        '(a | around | outer)': 'a',
-    })
-
-def objectChoice():
-    return Choice("object",{
-        'word': 'w',
-        'big word': 'W',
-        'sentence': 's',
-        '(paragraph | pare)': 'p',
-        'block': 'b',
-        '(paren | laip)': 'rparen',
-        '(brackets | rack)': 'rbracket',
-        '(brace | race)': 'rbrace',
-        'quote': 'dquote',
-        '(post | troth)': 'apostrophe',
-    })
-
-def motionChoice():
-    return Choice("motion", {
-        "up": "k",
-        "down": "j",
-        "left": "h",
-        "right": "l",
-        "word": "w",
-        "big word": "W",
-        "board": "b",
-        "word end": "e",
-        "big end [word]": "E",
-        "sent up": "lparen",
-        "sent down": "rparen",
-        "pare up": "lbrace",
-        "pare down": "rbrace",
-        "next": "n",
-        "pecks": "N",
-    })
-
-def uncountableMotionChoice():
-    return Choice("uncountableMotion", {
-        "start": "0",
-        "front": "caret",
-        "(end | rest)": "dollar",
-        "match": "percent",
-        "top": "g,g",
-        "bottom": "G",
-    })
-
-def findChoice():
-    return Choice("find", {
-        "find": "f",
-        "bind": "F",
-        "(until | till)": "t",
-        "bill": "T",
-    })
-
-def searchChoice():
-    return Choice("search", {
-        "search": "slash",
-        "birch": "question",
-    })
-
-def surroundChoice(name):
-    return Choice(name, {
-        "tag": "t",
-        'ampersand': 'ampersand',
-        '( post | apostrophe )': 'apostrophe',
-        '( starling | asterisk )': 'asterisk',
-        'backtick': 'backtick',
-        '( bar | pipe )': 'bar',
-        'dollar': 'dollar',
-        'quote': 'dquote',
-        'hashtag': 'hash',
-        'modulo': 'percent',
-        'single quote': 'squote',
-        '(tilde | strike)': 'tilde',
-        '(underscore | score)': 'underscore',
-
-        'langle': 'langle',
-        'lace': 'lbrace',
-        'lack': 'lbracket',
-        'laip': 'lparen',
-
-        'rangle': 'rangle',
-        '(race | brace | curly)': 'rbrace',
-        '(rack | bracket)': 'rbracket',
-        '(raip | paren)': 'rparen',
-    })
 #---------------------------------------------------------------------------
 # Set up this module's configuration.
 
