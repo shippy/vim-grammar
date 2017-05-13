@@ -8,8 +8,12 @@ from ..lib.execute_factory import executeFactory, multipleExecuteFactory
 class ActionRule(MappingRule):
     exported = True
     mapping = {
-        "[<n>] <verb> <motion>": Key("%(n)s, %(verb)s") + executeFactory('motion'),
-        "[<n>] <verb> <object>": Key("%(n)s, %(verb)s") + executeFactory('object'),
+        # "[<n>] <verb> <motion>": Key("%(n)s, %(verb)s") + executeFactory('motion'),
+        # "[<n>] <verb> <object>": Key("%(n)s, %(verb)s") + executeFactory('object'),
+        # FIXME: `select` is screwy with countable motions -- the meaning is different
+        # -> disabling for now while preserving object/motion count
+        "<verb> <motion>": Key("%(verb)s") + executeFactory('motion'),
+        "<verb> <object>": Key("%(verb)s") + executeFactory('object'),
         "[<n>] <simple_verb>": Key("%(n)s, %(simple_verb)s"),
         "[<n>] <verb> line": Key("%(n)s, %(verb)s:2"),
 
@@ -18,6 +22,7 @@ class ActionRule(MappingRule):
         "[<n>] replace <letter>": Key("%(n)s, r, %(letter)s"),
         "record <letter>": Key("q, %(letter)s"),
 
+        # TODO: Take "select" out of "verbChoice", define it fully here
         "select line": Key("V"),
         "select last": Key("g, v"),
         "(visual | select) block": Key("c-v"),
