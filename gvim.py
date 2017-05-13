@@ -1,5 +1,5 @@
 from dragonfly import *
-from vim.rules import action, motion, navigation, buffer, quick_replace, quick_settings
+from vim.rules import action, motion, navigation, buffer, quick_replace, quick_settings, diff
 from vim.plugins import surround, easy_motion, netrw, ctrlp
 from vim.vim_config import get_config
 try:
@@ -19,6 +19,7 @@ normal_CCR_rules = [
     RuleRef(rule = action.ActionRule()),
     RuleRef(rule = motion.MotionRule()),
     RuleRef(rule = surround.SurroundRule()),
+    RuleRef(rule = diff.DiffRule()),
 ]
 
 normal_CCR = Repetition(Alternative(normal_CCR_rules),
