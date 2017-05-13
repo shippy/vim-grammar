@@ -6,7 +6,6 @@ from . import object, motion
 from ..lib.execute_factory import executeFactory, multipleExecuteFactory
 
 class ActionRule(MappingRule):
-    exported = True
     mapping = {
         # "[<n>] <verb> <motion>": Key("%(n)s, %(verb)s") + executeFactory('motion'),
         # "[<n>] <verb> <object>": Key("%(n)s, %(verb)s") + executeFactory('object'),
