@@ -1,6 +1,6 @@
 from dragonfly import *
 from vim.rules import action, motion, navigation, buffer, quick_replace, quick_settings, diff
-from vim.plugins import surround, easy_motion, netrw, ctrlp
+from vim.plugins import surround, easy_motion, netrw, ctrlp, fugitive, unimpaired
 from vim.vim_config import get_config
 try:
     import pkg_resources
@@ -20,6 +20,7 @@ normal_CCR_rules = [
     RuleRef(rule = motion.MotionRule()),
     RuleRef(rule = surround.SurroundRule()),
     RuleRef(rule = diff.DiffRule()),
+    RuleRef(rule = unimpaired.UnimpairedRule()),
 ]
 
 normal_CCR = Repetition(Alternative(normal_CCR_rules),
@@ -45,6 +46,7 @@ normal_single_rules = [
     RuleRef(rule = buffer.BufferRule()),
     RuleRef(rule = quick_replace.QuickReplaceRule()),
     RuleRef(rule = quick_settings.QuickSettingsRule()),
+    RuleRef(rule = fugitive.FugitiveRule()),
 ]
 normal_single_action = Alternative(normal_single_rules, name = "normal_mode_single_action")
 
