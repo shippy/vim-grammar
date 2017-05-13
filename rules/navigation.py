@@ -7,8 +7,14 @@ c = get_config()
 class NavigationRule(MappingRule):
     mapping = {
         # Jump list:
-        "go old": Key("c-o"),
-        "go new": Key("c-i"),
+        # (gist = jump list)
+        "go old | gist up": Key("c-o"),
+        "go new | gist down": Key("c-i"),
+
+        "go old file | gist file up": Key("c-o:2/150, enter"),
+        "go new file | gist file down": Key("c-i:2/150, enter"),
+
+        "go alternate": Key("colon, e, hash"),
 
         # Cursor:
         "cursor top": Key("s-h"),
