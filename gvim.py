@@ -1,5 +1,5 @@
 from dragonfly import *
-from vim.rules import action, motion, navigation, buffer
+from vim.rules import action, motion, navigation, buffer, quick_replace
 from vim.plugins import surround, easy_motion, netrw, ctrlp
 from vim.vim_config import get_config
 try:
@@ -42,6 +42,7 @@ normal_single_rules = [
     RuleRef(rule = netrw.NetrwRule()),
     RuleRef(rule = ctrlp.CtrlPRule()),
     RuleRef(rule = buffer.BufferRule()),
+    RuleRef(rule = quick_replace.QuickReplaceRule()),
 ]
 normal_single_action = Alternative(normal_single_rules, name = "normal_mode_single_action")
 
