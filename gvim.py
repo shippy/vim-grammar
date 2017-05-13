@@ -1,6 +1,7 @@
 from dragonfly import *
-from vim.rules import action, motion
-from vim.plugins import surround, easy_motion
+from vim.rules import action, motion, navigation
+from vim.plugins import surround, easy_motion, netrw, ctrlp
+from vim.vim_config import get_config
 try:
     import pkg_resources
     pkg_resources.require("dragonfly >= 0.6.5beta1.dev-r99")
@@ -9,6 +10,8 @@ except ImportError:
 
 print 'new gVim grammar accessed.'
 
+# Saving generally useful info
+config = get_config()
 release = Key("shift:up, ctrl:up")
 
 # What rules go in the chainable continuous command recognition?
@@ -35,6 +38,9 @@ class NormalModeCCR(CompoundRule):
 
 normal_single_rules = [
     RuleRef(rule = easy_motion.EasyMotionRule()),
+    RuleRef(rule = navigation.NavigationRule()),
+    RuleRef(rule = netrw.NetrwRule()),
+    RuleRef(rule = ctrlp.CtrlPRule()),
 ]
 normal_single_action = Alternative(normal_single_rules, name = "normal_mode_single_action")
 
