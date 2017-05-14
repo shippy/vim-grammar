@@ -1,5 +1,6 @@
 from dragonfly import Choice, MappingRule, Key, IntegerRef, RuleRef
 from .quick_search import QuickSearchRule
+from .marks import MarkMotionRule
 from ..choices.motion import motionChoice
 from ..choices.uncountableMotion import uncountableMotionChoice
 from ..lib.execute_factory import executeFactory, multipleExecuteFactory
@@ -9,6 +10,7 @@ class MotionRule(MappingRule):
     mapping = {
         "[<n>] <motion>": Key("%(n)d, %(motion)s"),
         "<quick_search>": executeFactory('quick_search'),
+        "<mark>": executeFactory('mark'),
         "go <uncountableMotion>": Key("%(uncountableMotion)s"),
     }
     extras = [
@@ -16,6 +18,7 @@ class MotionRule(MappingRule):
         motionChoice("motion"),
         uncountableMotionChoice("uncountableMotion"),
         RuleRef(rule = QuickSearchRule(name = "motion_qsearch"), name = "quick_search"),
+        RuleRef(rule = MarkMotionRule(name = "motion_mark"), name = "mark"),
     ]
     defaults = {
         "n": 1,
