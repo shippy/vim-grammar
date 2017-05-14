@@ -1,5 +1,5 @@
 from dragonfly import *
-from vim.rules import action, motion, navigation, buffer, quick_replace, quick_settings, diff, general
+from vim.rules import action, motion, object, navigation, buffer, quick_replace, quick_settings, diff, general
 from vim.plugins import surround, easy_motion, netrw, ctrlp, fugitive, unimpaired
 from vim.vim_config import get_config
 try:
@@ -14,7 +14,8 @@ print 'new gVim grammar accessed.'
 config = get_config()
 release = Key("shift:up, ctrl:up")
 
-# What rules go in the chainable continuous command recognition?
+### 1. Normal mode
+# a. What rules go in the chainable continuous command recognition?
 normal_CCR_rules = [
     RuleRef(rule = action.ActionRule()),
     RuleRef(rule = motion.MotionRule()),
@@ -39,6 +40,7 @@ class NormalModeCCR(CompoundRule):
             action.execute()
         release.execute()
 
+# b. What rules should not be chainable?
 normal_single_rules = [
     RuleRef(rule = easy_motion.EasyMotionRule()),
     RuleRef(rule = navigation.NavigationRule()),
@@ -59,17 +61,91 @@ class NormalModeSingleAction(CompoundRule):
         action.execute()
         release.execute()
 
+### 2. Insert mode
+from vim.rules.insert_mode import InsertModeCommands, InsertModeStartRule, InsertModeFinishRule
+# Inherit all mappings, extras, defaults from InsertModeStartRule
+
+class InsertModeEnabler(InsertModeStartRule):
+    def _process_recognition(self, node, extras):
+        insertModeBootstrap.disable()
+        normalModeGrammar.disable()
+        insertModeGrammar.enable()
+        # Note: there are issues with the super call. If you run into them,
+        # do not fret and google for super TypeError order.
+        super(self.__class__, self)._process_recognition(node, extras)
+        print "\n(INSERT)"
+
+class InsertModeDisabler(InsertModeFinishRule):
+    def _process_recognition(self, node, extras):
+        insertModeGrammar.disable()
+        insertModeBootstrap.enable()
+        normalModeGrammar.enable()
+        super(self.__class__, self)._process_recognition(node, extras)
+        print "\n(NORMAL)"
+
+### 3. Command mode
+from vim.rules.command_mode import CommandModeStartRule, CommandModeFinishRule, CommandModeCommands
+
+class CommandModeEnabler(CommandModeStartRule):
+    def _process_recognition(self, node, extras):
+        commandModeBootstrap.disable()
+        normalModeGrammar.disable()
+        commandModeGrammar.enable()
+        print "\n(EX MODE)"
+
+class CommandModeDisabler(CommandModeFinishRule):
+    def _process_recognition(self, node, extras):
+        commandModeGrammar.disable()
+        commandModeBootstrap.enable()
+        normalModeGrammar.enable()
+        super(self.__class__, self)._process_recognition(node, extras)
+        print "\n(NORMAL)"
+
+### 4. Prep & activate the requisite grammars
 gvim_exec_context = AppContext(executable="gvim")
 vim_putty_context = AppContext(title="vim")
 gvim_context = (gvim_exec_context | vim_putty_context)
 
+# a. Normal mode - on by default
 normalModeGrammar = Grammar("gvim", context=gvim_context)
 normalModeGrammar.add_rule(NormalModeCCR())
 normalModeGrammar.add_rule(NormalModeSingleAction())
 normalModeGrammar.load()
 
-# Unload function which will be called at unload time.
+# b. Insert and Command modes - waiting for activation
+# Bootstrap = insert-mode activating set of rules
+insertModeBootstrap = Grammar("Insert Mode bootstrap", context=gvim_context)
+insertModeBootstrap.add_rule(InsertModeEnabler())
+insertModeBootstrap.load()
+
+# Grammar = set of commands in the actual mode, when invoked by bootstrap
+insertModeGrammar = Grammar("Insert Mode grammar", context=gvim_context)
+insertModeGrammar.add_rule(InsertModeCommands())
+insertModeGrammar.add_rule(InsertModeDisabler())
+insertModeGrammar.load()
+insertModeGrammar.disable()
+
+# same for command mode
+commandModeBootstrap = Grammar("Command Mode bootstrap", context=gvim_context)
+commandModeBootstrap.add_rule(CommandModeEnabler())
+commandModeBootstrap.load()
+
+commandModeGrammar = Grammar("Command Mode grammar", context=gvim_context)
+commandModeGrammar.add_rule(CommandModeCommands())
+commandModeGrammar.add_rule(CommandModeDisabler())
+commandModeGrammar.load()
+commandModeGrammar.disable()
+
+# Unload function which will be called at unload time
 def unload():
     global normalModeGrammar
     if normalModeGrammar: normalModeGrammar.unload()
     normalModeGrammar = None
+
+    global commandModeGrammar
+    if commandModeGrammar: commandModeGrammar.unload()
+    commandModeGrammar = None
+
+    global insertModeGrammar
+    if insertModeGrammar: insertModeGrammar.unload()
+    insertModeGrammar = None
