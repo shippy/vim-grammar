@@ -91,6 +91,7 @@ class CommandModeEnabler(CommandModeStartRule):
         commandModeBootstrap.disable()
         normalModeGrammar.disable()
         commandModeGrammar.enable()
+        super(self.__class__, self)._process_recognition(node, extras)
         print "\n(EX MODE)"
 
 class CommandModeDisabler(CommandModeFinishRule):

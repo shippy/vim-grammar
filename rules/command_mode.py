@@ -58,7 +58,7 @@ class CommandModeCommands(MappingRule):
         "X change": Key("c"),
         "X insert": Key("i"),
         "X join": Key("j"),
-        "X copy": Key("co"),
+        "X copy": Key("c, o"),
         "X move": Key("m"),
         "X put": Key("p"),
         "X yank": Key("y"),
