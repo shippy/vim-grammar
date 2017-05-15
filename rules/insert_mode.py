@@ -8,8 +8,8 @@ from ..lib.execute_rule import execute_rule
 class InsertModeStartRule(MappingRule):
     exported = True
     mapping = {
-        "change <motion> [<text>]": Key("%(verb)s") + execute_rule('motion') + Text('%(text)s'),
-        "change <object> [<text>]": Key("%(verb)s") + execute_rule('object') + Text('%(text)s'),
+        "change <motion> [<text>]": Key("c") + execute_rule('motion') + Text('%(text)s'),
+        "change <object> [<text>]": Key("c") + execute_rule('object') + Text('%(text)s'),
         "change line [<text>]": Key("c,c") + Text('%(text)s'),
 
         "insert [<text>]": Key("i") + Text('%(text)s'),
