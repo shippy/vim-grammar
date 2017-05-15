@@ -3,15 +3,15 @@ from dragonfly import MappingRule, Key, Text, IntegerRef
 class FugitiveRule(MappingRule):
     mapping = {
         # Big picture commands:
-        "get status": Text(":Gstatus"),
-        "get diff this": Text(":Gdiff"),
-        "get commit": Text(":Gcommit"),
+        "get status": Text(":Gstatus") + Key("enter"),
+        "get diff this": Text(":Gdiff") + Key("enter"),
+        "get commit": Text(":Gcommit") + Key("enter"),
 
         # Navigating Gstatus window:
-        # TODO: Should only be triggered by "get status"?
+        # TODO: Own grammar with AppContext "vim - index"
         "[<n>] get up": Key("%(n)d, c-p"),
         "[<n>] get down": Key("%(n)d, c-n"),
-        "get add": Key("hyphen"),
+        "get pick": Key("hyphen"), # add on unstaged/untracked, remove on staged files
         "get diff": Key("D"),
         "get (scratch | clean)": Key("U"),
         "get amend": Key("c, a"),
