@@ -3,6 +3,7 @@ from ..choices.verb import verbChoice
 from ..choices.simple_verb import simpleVerbChoice
 from ..choices.letter import letterChoice
 from . import object, motion
+from .letter import LetterSequenceRule
 from ..lib.execute_rule import execute_rule
 
 class ActionRule(MappingRule):
@@ -18,6 +19,7 @@ class ActionRule(MappingRule):
 
         # Special cases:
         # TODO: replace sequence <letter_sequence>
+        "replace spell <letter_sequence>": Key("R") + execute_rule('letter_sequence') + Key("escape"),
         "[<n>] replace <letter>": Key("%(n)s, r, %(letter)s"),
         "record <letter>": Key("q, %(letter)s"),
 
@@ -34,6 +36,7 @@ class ActionRule(MappingRule):
         letterChoice("letter"),
         RuleRef(rule = motion.MotionRule(name = "action_motion"), name = "motion"),
         RuleRef(rule = object.ObjectRule(name = "action_object"), name = "object"),
+        RuleRef(rule = LetterSequenceRule(name = "action_letter_sequence"), name = "letter_sequence")
     ]
     defaults = {
         "n": 1,

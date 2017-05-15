@@ -11,7 +11,7 @@ class LetterRule(MappingRule):
 
 letter_sequence = Repetition(
     Alternative([RuleRef(rule = LetterRule())]),
-    min = 1, max = 10, name = "letter_sequence")
+    min = 1, max = 6, name = "letter_sequence")
 
 class LetterSequenceRule(CompoundRule):
     spec     = "<letter_sequence>"
