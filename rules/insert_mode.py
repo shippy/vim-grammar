@@ -1,15 +1,15 @@
 from dragonfly import Choice, MappingRule, Key, RuleRef, Text, Dictation, IntegerRef
 from . import object, motion
 from ..choices.letter import letterChoice
-from ..lib.execute_factory import executeFactory, multipleExecuteFactory
+from ..lib.execute_rule import execute_rule
 
 # Both InsertModeStartRule and InsertModeFinishRule must be wrapped in grammar
 # enabling / disabling objects in the main file that dragonfly processes.
 class InsertModeStartRule(MappingRule):
     exported = True
     mapping = {
-        "change <motion> [<text>]": Key("%(verb)s") + executeFactory('motion') + Text('%(text)s'),
-        "change <object> [<text>]": Key("%(verb)s") + executeFactory('object') + Text('%(text)s'),
+        "change <motion> [<text>]": Key("%(verb)s") + execute_rule('motion') + Text('%(text)s'),
+        "change <object> [<text>]": Key("%(verb)s") + execute_rule('object') + Text('%(text)s'),
         "change line [<text>]": Key("c,c") + Text('%(text)s'),
 
         "insert [<text>]": Key("i") + Text('%(text)s'),

@@ -1,7 +1,7 @@
 from dragonfly import Choice, MappingRule, Key, RuleRef, Text, Dictation, IntegerRef
 from . import object, motion
 from ..choices.letter import letterChoice
-from ..lib.execute_factory import executeFactory, multipleExecuteFactory
+# from ..lib.execute_rule import execute_rule
 
 # Both CommandModeStartRule and CommandModeFinishRule must be wrapped in grammar
 # enabling / disabling objects in the main file that dragonfly processes.

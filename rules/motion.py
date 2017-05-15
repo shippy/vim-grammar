@@ -3,14 +3,14 @@ from .quick_search import QuickSearchRule
 from .marks import MarkMotionRule
 from ..choices.motion import motionChoice
 from ..choices.uncountableMotion import uncountableMotionChoice
-from ..lib.execute_factory import executeFactory, multipleExecuteFactory
+from ..lib.execute_rule import execute_rule
 
 class MotionRule(MappingRule):
     exported = True
     mapping = {
         "[<n>] <motion>": Key("%(n)d, %(motion)s"),
-        "<quick_search>": executeFactory('quick_search'),
-        "<mark>": executeFactory('mark'),
+        "<quick_search>": execute_rule('quick_search'),
+        "<mark>": execute_rule('mark'),
         "go <uncountableMotion>": Key("%(uncountableMotion)s"),
     }
     extras = [
