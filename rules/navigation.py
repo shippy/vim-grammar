@@ -14,7 +14,11 @@ class NavigationRule(MappingRule):
         "go old file | gist file up": Key("c-o:2/150, enter"),
         "go new file | gist file down": Key("c-i:2/150, enter"),
 
-        "go alternate": Key("colon, e, hash"),
+        "go alternate": Key("colon, e, hash, enter"),
+
+        "go file": Key("g, f"),
+        "go tag": Key("c-rbracket"),
+        "go tag back": Key("c-t"),
 
         # Cursor:
         "cursor top": Key("s-h"),

@@ -1,7 +1,8 @@
-from dragonfly import MappingRule, Key
+from dragonfly import MappingRule, Key, Text
 
 class GeneralRule(MappingRule):
     mapping = {
         "cancel": Key("escape, u"),
-        "abort": Key("escape"),
+        "abort": Key("c-c"),
+        "hide light": Text(':nohlsearch\n'),
     }

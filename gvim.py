@@ -1,3 +1,8 @@
+# Try remote debugging
+# import ptvsd
+# ptvsd.enable_attach("", address = ('127.0.0.1', 3000))
+# ptvsd.wait_for_attach()
+
 from dragonfly import *
 from vim.rules import action, motion, object, navigation, buffer, quick_replace, quick_settings, diff, general
 from vim.plugins import surround, easy_motion, netrw, ctrlp, fugitive, unimpaired, snipmate

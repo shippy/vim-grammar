@@ -51,6 +51,7 @@ class CommandModeCommands(MappingRule):
     mapping  = {
         "read": Text("r "),
         "help": Text("help "),
+        "file glob": Text("*/**"), # see `starstar`
 
         # Ex mode commands (see :exu for complete list):
         "X delete": Key("d"),

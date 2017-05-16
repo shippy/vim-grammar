@@ -26,6 +26,7 @@ class ActionRule(MappingRule):
         # TODO: Take "select" out of "verbChoice", define it fully here
         "select line": Key("V"),
         "select last": Key("g, v"),
+        "visual other": Key("o"), # switch to other end of visual selection
         "(visual | select) block": Key("c-v"),
         "duplicate line": Key("y, y, p"),
     }
