@@ -11,7 +11,7 @@ class SurroundRule(MappingRule):
         "(Sir | wrap) now [in] <surround>": Key("S, %(surround)s"),
 
         # Changing and deleting surround:
-        "(change Sir | strange) [from] <surround> [to] <surround_alt>": Key("c,s") + Key("%(surround)s"),
+        "(change Sir | strange) [from] <surround> [to] <surround_alt>": Key("c,s") + Key("%(surround)s") + Key("%(surround_alt)"),
         "(delete Sir | sleet) <surround>": Key("d,s") + Key("%(surround)s"),
     }
     extras = [

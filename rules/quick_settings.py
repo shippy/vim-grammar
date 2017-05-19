@@ -5,8 +5,8 @@ class QuickSettingsRule(MappingRule):
         "win diff": Key("colon") + Text("windo diffthis"),
         "win diff off": Key("colon") + Text("windo diffoff"),
 
-        "win scroll": Key("colon") + Text("windo scrollbind"),
-        "win scroll off": Key("colon") + Text("windo noscrollbind"),
+        "win scroll": Key("colon") + Text("windo setl scrollbind"),
+        "win scroll off": Key("colon") + Text("windo setl noscrollbind"),
 
         "fix exec": Key("q, colon"),
         "fix search": Key("q, slash"),
