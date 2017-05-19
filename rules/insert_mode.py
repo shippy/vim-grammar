@@ -1,4 +1,4 @@
-from dragonfly import Choice, MappingRule, Key, RuleRef, Text, Dictation, IntegerRef
+from dragonfly import Choice, MappingRule, Key, RuleRef, Text, Dictation, IntegerRef, Mimic, Repetition, Alternative, CompoundRule
 from . import object, motion
 from ..choices.letter import letterChoice
 from ..lib.execute_rule import execute_rule
@@ -40,6 +40,8 @@ class InsertModeCommands(MappingRule):
     mapping = {
         # Insertion
         "<text>": Key('c-g, u') + Text("%(text)s"), # create undo point
+        # "cancel": Mimic("cancel"),
+        # "kay": Mimic("kay"),
         # "complete": Key("tab"), # "tabby" should do the trick
         "comp line": Key("c-x, c-l"),
         "comp file": Key("c-x, c-f"),
@@ -76,3 +78,22 @@ class InsertModeCommands(MappingRule):
     defaults = {
         "n": 1,
     }
+
+# Defining CCR right here because why not?
+insert_CCR_rules = [
+    RuleRef(rule = InsertModeCommands()),
+]
+insert_CCR = Repetition(Alternative(insert_CCR_rules),
+                        min = 1, max = 10,
+                        name = "insert_mode_sequence")
+
+class InsertModeCCR(CompoundRule):
+    spec     = "<insert_mode_sequence>"
+    extras   = [ insert_CCR ]
+    def _process_recognition(self, node, extras):
+        # A sequence of actions.
+        insert_mode_sequence = extras["insert_mode_sequence"]
+        # An integer repeat count.
+        for action in insert_mode_sequence:
+            action.execute()
+        Key("shift:up, ctrl:up").execute()

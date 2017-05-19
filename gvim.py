@@ -67,9 +67,11 @@ class NormalModeSingleAction(CompoundRule):
         release.execute()
 
 ### 2. Insert mode
-from vim.rules.insert_mode import InsertModeCommands, InsertModeStartRule, InsertModeFinishRule
-# Inherit all mappings, extras, defaults from InsertModeStartRule
+from vim.rules.insert_mode import InsertModeStartRule, InsertModeFinishRule
+from vim.rules.insert_mode import InsertModeCommands, InsertModeCCR
+# create continuous resolution for insert mode, too
 
+# Inherit all mappings, extras, defaults from InsertModeStartRule
 class InsertModeEnabler(InsertModeStartRule):
     def _process_recognition(self, node, extras):
         insertModeBootstrap.disable()
@@ -126,6 +128,7 @@ insertModeBootstrap.load()
 
 # Grammar = set of commands in the actual mode, when invoked by bootstrap
 insertModeGrammar = Grammar("Insert Mode grammar", context=gvim_context)
+# insertModeGrammar.add_rule(InsertModeCCR())
 insertModeGrammar.add_rule(InsertModeCommands())
 insertModeGrammar.add_rule(InsertModeDisabler())
 insertModeGrammar.add_rule(snipmate.SnipMateRule())
