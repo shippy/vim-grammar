@@ -5,4 +5,5 @@ class GeneralRule(MappingRule):
         "cancel": Key("escape, u"),
         "abort": Key("c-c"),
         "hide light": Text(':nohlsearch\n'),
+        "local directory": Text('lcd %:h'),
     }
