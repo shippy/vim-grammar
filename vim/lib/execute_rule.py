@@ -19,7 +19,7 @@ def _executeRecursive(executable):
         for item in executable:
             _executeRecursive(item)
     else:
-        print "Neither executable nor a list: ", executable
+        print("Neither executable nor a list: ", executable)
 
 def execute_rule(*rule_names):
     def _exec_function(**kwargs):

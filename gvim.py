@@ -73,7 +73,7 @@ class InsertModeEnabler(InsertModeStartRule):
         # Note: there are issues with the super call. If you run into them,
         # do not fret and google for super TypeError order.
         super(self.__class__, self)._process_recognition(node, extras)
-        print "\n(INSERT)"
+        print("\n(INSERT)")
 
 class InsertModeDisabler(InsertModeFinishRule):
     def _process_recognition(self, node, extras):
@@ -81,7 +81,7 @@ class InsertModeDisabler(InsertModeFinishRule):
         insertModeBootstrap.enable()
         normalModeGrammar.enable()
         super(self.__class__, self)._process_recognition(node, extras)
-        print "\n(NORMAL)"
+        print("\n(NORMAL)")
 
 ### 3. Command mode
 from vim.rules.command_mode import CommandModeStartRule, CommandModeFinishRule, CommandModeCommands
@@ -92,7 +92,7 @@ class CommandModeEnabler(CommandModeStartRule):
         normalModeGrammar.disable()
         commandModeGrammar.enable()
         super(self.__class__, self)._process_recognition(node, extras)
-        print "\n(EX MODE)"
+        print("\n(EX MODE)")
 
 class CommandModeDisabler(CommandModeFinishRule):
     def _process_recognition(self, node, extras):
@@ -100,7 +100,7 @@ class CommandModeDisabler(CommandModeFinishRule):
         commandModeBootstrap.enable()
         normalModeGrammar.enable()
         super(self.__class__, self)._process_recognition(node, extras)
-        print "\n(NORMAL)"
+        print("\n(NORMAL)")
 
 ### 4. Prep & activate the requisite grammars
 gvim_exec_context = AppContext(executable="gvim")
