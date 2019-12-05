@@ -7,13 +7,6 @@ from dragonfly import *
 from vim.rules import action, motion, object, navigation, buffer, quick_replace, quick_settings, diff, general
 from vim.plugins import surround, easy_motion, netrw, ctrlp, fugitive, unimpaired, snipmate
 from vim.vim_config import get_config
-try:
-    import pkg_resources
-    pkg_resources.require("dragonfly >= 0.6.5beta1.dev-r99")
-except ImportError:
-    pass
-
-print 'new gVim grammar accessed.'
 
 # Saving generally useful info
 config = get_config()
